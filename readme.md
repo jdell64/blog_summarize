@@ -1,3 +1,9 @@
- blog_summarize
- 
- This is a powershell script that summarizes wordpress blogs and writes them to an html file locally. 
+blog_summarize
+
+This is a powershell script that summarizes wordpress blogs and writes them to an html file locally. 
+
+To specify the blogs, change the first variable in the code:
+
+    $urls = "http://...",
+      "http://...",
+      "http://..."
