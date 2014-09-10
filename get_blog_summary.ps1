@@ -38,12 +38,12 @@ function summarize-page ($url){
     $mostRecentTitle = $titles[0]
     $contents = ($html.ParsedHtml.getElementsByTagName('div') | where {$_.className -eq 'entry-content'} ).innerText
     $mostRecentContent = $contents[0]
-
-    $shortenedMRC = $mostRecentContent.Split(" ")[0..200]
+    $index = $mostRecentContent.IndexOf("`n")
+    $shortenedMRC = $mostRecentContent.Split(" ")[0..$index]
     $shortenedMRC = $shortenedMRC -join " "
-    $shortenedMRC = $shortenedMRC +"..."
-    $shortenedMRC = $shortenedMRC.Replace("`n", "</p><p>")
-
+    $shortenedMRC = $shortenedMRC + '</p><p><a href="'+$url+'">Click here</a> to continue reading this post.'
+    #$shortenedMRC = $shortenedMRC.Replace("`n", "</p><p>")
+    
     $returnText = '<div class="summary"><h2 class="title"><a href="'+$url+'">'+$mostRecentTitle+'</a></h1><div class="content"><p>'+$shortenedMRC+'</p></div></div>'
     
     return $returnText
@@ -62,4 +62,5 @@ foreach ($url in $urls){
     $i++
 }
 $summary+= "</div>"
-$summary | Out-File .\"blog-summary_$(get-date -f yyyy-MM-dd)".txt
+# $summary | Out-File .\"blog-summary_$(get-date -f yyyy-MM-dd)".txt
+$summary | Out-File .\"current-blog-summary.txt" -Encoding ascii
