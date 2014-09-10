@@ -2,7 +2,6 @@
 $urls = "http://calvarytemplemissions.wordpress.com", 
 "http://calvarytempleoutreach.wordpress.com", 
 "http://calvarytemplekidschapel.wordpress.com", 
-"http://calvarytemple4kids.wordpress.com", 
 "http://calvarytemplewinchester.wordpress.com", 
 #"http://calvarytempleyouth.wordpress.com", 
 "http://calvaryTemple4Kids.wordpress.com", 
@@ -39,11 +38,13 @@ function summarize-page ($url){
     $mostRecentTitle = $titles[0]
     $contents = ($html.ParsedHtml.getElementsByTagName('div') | where {$_.className -eq 'entry-content'} ).innerText
     $mostRecentContent = $contents[0]
-    $shortenedMRC = $mostRecentContent.Split(" ")[0..150]
-    $shortenedMRC = $shortenedMRC +"..."
-    $shortenedMRC = $shortenedMRC -join " "
 
-    $returnText = '<div class="summary"><h1 class="title"><a href="'+$url+'">'+$mostRecentTitle+'</a></h1><div class="content">'+$shortenedMRC+'</div></div>'
+    $shortenedMRC = $mostRecentContent.Split(" ")[0..200]
+    $shortenedMRC = $shortenedMRC -join " "
+    $shortenedMRC = $shortenedMRC +"..."
+    $shortenedMRC = $shortenedMRC.Replace("`n", "</p><p>")
+
+    $returnText = '<div class="summary"><h2 class="title"><a href="'+$url+'">'+$mostRecentTitle+'</a></h1><div class="content"><p>'+$shortenedMRC+'</p></div></div>'
     
     return $returnText
 
@@ -61,4 +62,4 @@ foreach ($url in $urls){
     $i++
 }
 $summary+= "</div>"
-$summary | Out-File .\"blog-summary_$(get-date -f yyyy-MM-dd)".html
+$summary | Out-File .\"blog-summary_$(get-date -f yyyy-MM-dd)".txt
