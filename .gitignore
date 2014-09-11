@@ -1,4 +1,6 @@
 blog-summary*
 current-blog-summary.*
 *.cfg
+*.ps1
+test.py
 .idea/
