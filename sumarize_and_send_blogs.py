@@ -8,12 +8,22 @@ import time
 import sys
 from unidecode import unidecode
 
-
-# constants
-
+# load the configparser
 config = ConfigParser.RawConfigParser()
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+
+
+# set up logging
+# make log_level in config file, which means i have to set this in the loop
+# logging.basicConfig(filename='blog_summary.log',level=logging.INFO)
+logger = logging.getLogger('BSS')
+hdlr = logging.FileHandler('blog_summary.log')
+formatter = logging.Formatter('%(asctime)s - [%(levelname)s] - %(message)s')
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr)
+logger.setLevel(logging.INFO)
+
+
+
 
 def get_mailchimp_api():
     return mailchimp.Mailchimp(MAILCHIMP_API)  #your api key here
@@ -112,7 +122,9 @@ def monkey_around(m, blog_summaries):
 
 # SEND EMAIL
 def send_mail(m, cid):
+    logger.info("Sending email.")
     m.campaigns.send(cid)
+    logger.info("Email sent.")
 
 
 
@@ -123,7 +135,7 @@ while (1):
 # read the config file every time you run
 
     config.read('myconfig.cfg')
-    TEMPLATE_ID = config.getint('main', 'template_id')
+    # TEMPLATE_ID = config.getint('main', 'template_id')
     CAMPAIGN_ID = config.get('main', 'campaign_id')
     MAILCHIMP_API = config.get('main', 'key')
     LIST_ID = config.get('email', 'list_id')
@@ -155,4 +167,9 @@ while (1):
         logger.error("Unexpected error sending email:"+ sys.exc_info()[0])
     # SEND AN EMAIL
 
+    logger.info("Done. Sleeping for %s seconds" % SECONDS_TO_SLEEP)
+
     time.sleep(SECONDS_TO_SLEEP)
+
+
+# todo: put logging level in config file and set the variable in the loop.
