@@ -1,6 +1,6 @@
+import smtplib
 import urllib2
 import mailchimp
-import os
 import logging
 import ConfigParser
 from bs4 import BeautifulSoup
@@ -126,6 +126,38 @@ def send_mail(m, cid):
     m.campaigns.send(cid)
     logger.info("Email sent.")
 
+# if something goes wrong, email the admin
+def send_error_email(message):
+    logger.error("sending an email to the admin with message: %s" % message)
+
+    service_email = config.get('error_email', 'service_email')
+    service_pass = config.get('error_email', 'service_pass')
+    admin_email = config.get('error_email', 'admin_email')
+    admin_email = admin_email.split(",")
+
+    FROM = service_email
+    TO = admin_email #must be a list
+    SUBJECT = "Error with summarizing blog"
+    TEXT = message
+
+    # Prepare actual message
+    headMess = """\From: %s\nTo: %s\nSubject: %s\n\n%s
+    """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587) #or port 465 doesn't seem to work!
+        #server = smtp.lib.SMTP_SSL("smtp.gmail.com", 465)
+
+        server.ehlo()
+        server.starttls()
+        server.login(service_email, service_pass)
+        server.sendmail(FROM, TO, headMess)
+        #server.quit()
+        server.close()
+        logger.error('Successfully sent the email to: %s' %admin_email)
+    except:
+        logger.error('Unable to send the email to: %s' %admin_email)
+        logger.error( str(sys.exc_info()))
+
 
 
 
@@ -138,34 +170,25 @@ while (1):
     # TEMPLATE_ID = config.getint('main', 'template_id')
     CAMPAIGN_ID = config.get('main', 'campaign_id')
     MAILCHIMP_API = config.get('main', 'key')
-    LIST_ID = config.get('email', 'list_id')
-    SUBJECT = config.get('email', 'subject')
-    FROM_EMAIL = config.get('email', 'from_email')
-    FROM_NAME = config.get('email', 'from_name')
-    TO_NAME = config.get('email', 'to_name')
+    LIST_ID = config.get('mail_chimp', 'list_id')
+    SUBJECT = config.get('mail_chimp', 'subject')
+    FROM_EMAIL = config.get('mail_chimp', 'from_email')
+    FROM_NAME = config.get('mail_chimp', 'from_name')
+    TO_NAME = config.get('mail_chimp', 'to_name')
     BLOG_LIST = config.get('main', 'blogs')
-    SECONDS_TO_SLEEP = config.getint('email','wait_interval')
+    SECONDS_TO_SLEEP = config.getint('mail_chimp','wait_interval')
     m = get_mailchimp_api()
     blog_summaries=""
     cid=0
 
     try:
         blog_summaries = get_blogs(BLOG_LIST)
-    except:
-        logger.error("Unexpected error getting blogs:" + sys.exc_info()[0])
-    #     SEND AN EMAIL HERE
-
-    try:
         cid = monkey_around(m, blog_summaries)
-    except:
-        logger.error("Unexpected error monkeying around:" + sys.exc_info()[0])
-    # SEND AN EMAIL
-
-    try:
         send_mail(m, cid)
     except:
-        logger.error("Unexpected error sending email:"+ sys.exc_info()[0])
-    # SEND AN EMAIL
+        logger.error("Unexpected error:" + str(sys.exc_info()))
+        send_error_email(str(sys.exc_info()))
+    #     SEND AN EMAIL HERE
 
     logger.info("Done. Sleeping for %s seconds" % SECONDS_TO_SLEEP)
 
@@ -173,4 +196,6 @@ while (1):
 
 
 # todo: put logging level in config file and set the variable in the loop.
-# todo: gui for editing the config file.
+# todo: gui for editing the config file. separate application
+# todo: subtract run time from interval?
+# todo: update config_generator
