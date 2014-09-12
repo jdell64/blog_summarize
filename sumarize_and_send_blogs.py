@@ -173,3 +173,4 @@ while (1):
 
 
 # todo: put logging level in config file and set the variable in the loop.
+# todo: gui for editing the config file.
