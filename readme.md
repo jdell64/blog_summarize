@@ -7,3 +7,9 @@ To specify the blogs, change the first variable in the code:
     $urls = "http://...",
       "http://...",
       "http://..."
+
+These need to be installed:
+
+- import mailchimp
+- from bs4 import BeautifulSoup
+- from unidecode import unidecode

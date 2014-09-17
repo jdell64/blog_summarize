@@ -5,3 +5,4 @@ current-blog-summary.*
 test.py
 *.log
 .idea/
+my*

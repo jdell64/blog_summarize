@@ -168,7 +168,7 @@ while (1):
 
     config.read('myconfig.cfg')
     # TEMPLATE_ID = config.getint('main', 'template_id')
-    CAMPAIGN_ID = config.get('main', 'campaign_id')
+    # CAMPAIGN_ID = config.get('main', 'campaign_id')
     MAILCHIMP_API = config.get('main', 'key')
     LIST_ID = config.get('mail_chimp', 'list_id')
     SUBJECT = config.get('mail_chimp', 'subject')
