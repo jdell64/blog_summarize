@@ -65,7 +65,7 @@ def get_blogs(blog_list):
                 logger.warn("Paragraph selection for "+blog+" was too short. Adding in next paragraph.")
                 index += 1
             blog_summary = '<div class="summary"><h2 class="title"><a href="' + blog + '">' + most_recent_title + '</a></h1><div ' \
-                                                                                                                  'class="content">' + desired_text + '</p></div></div>'
+                                                                                                                  'class="content">' + desired_text + '</p><p><a href="'+blog+'">Read More...</a></p></div></div>'
             blog_summaries.append(blog_summary)
         logger.info("Finished with blog: "+blog)
     else:
