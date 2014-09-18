@@ -1,5 +1,6 @@
 import smtplib
 import urllib2
+import datetime
 import mailchimp
 import logging
 import ConfigParser
@@ -160,10 +161,44 @@ def send_error_email(message):
 
 
 
+def write_run_time():
+    now = datetime.datetime.now()
+    with open('lastrun.txt', 'w') as f:
+        f.write(str(now))
+
+def get_last_run_time():
+    try:
+        with open('lastrun.txt', 'r') as f:
+            lrt = f.read()
+            try:
+                lrt = datetime.datetime.strptime(lrt, '%Y-%m-%d %H:%M:%S.%f')
+            except ValueError:
+                lrt = datetime.datetime.strptime(lrt, '%Y-%m-%d %H:%M:%S')
+        return lrt
+    except IOError:
+        write_run_time()
+
+def add_seconds_to_dt(sec, dt):
+    future = dt + datetime.timedelta(seconds=sec)
+    return future
+
+def check_run_time(rt):
+    if rt < datetime.datetime.now():
+        return 0
+    else:
+        logger.warning("Next runtime is later than now.")
+        logger.warning("Waiting %s seconds to continue running."% (rt - datetime.datetime.now()).total_seconds())
+        return (rt - datetime.datetime.now()).total_seconds()
+
+
+
+
+
 
 
 #put in the loop
 while (1):
+    logger.info('Starting process...')
 # read the config file every time you run
 
     config.read('myconfig.cfg')
@@ -181,10 +216,23 @@ while (1):
     blog_summaries=""
     cid=0
 
+
+
+    try:
+        lrt = get_last_run_time() #last run time
+        nrt = add_seconds_to_dt(SECONDS_TO_SLEEP, lrt) #next run time
+        wait_time = check_run_time(nrt) #time until next run time
+        time.sleep(wait_time)
+    except:
+        logger.error("Unexpected error:" + str(sys.exc_info()))
+        send_error_email(str(sys.exc_info()))
+
+
     try:
         blog_summaries = get_blogs(BLOG_LIST)
         cid = monkey_around(m, blog_summaries)
         send_mail(m, cid)
+        write_run_time()
     except:
         logger.error("Unexpected error:" + str(sys.exc_info()))
         send_error_email(str(sys.exc_info()))

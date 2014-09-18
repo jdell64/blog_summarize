@@ -13,3 +13,9 @@ These need to be installed:
 - import mailchimp
 - from bs4 import BeautifulSoup
 - from unidecode import unidecode
+
+todo:
+- install script
+- last time sent (in case server bounces)
+- send two weeks from last time sent
+- as service and run on startup
