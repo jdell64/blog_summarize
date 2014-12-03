@@ -16,6 +16,8 @@ These need to be installed:
 
 todo:
 - install script
-- last time sent (in case server bounces)
-- send two weeks from last time sent
-- as service and run on startup
+- send two weeks from last time sent (make this configurable)
+- ignore last sent time with switch
+- as service and run on startup (done, add to repo)
+- adjust admin email... should have a message in the error message (replaced with text file attachment for now)
+- log rotation
