@@ -133,38 +133,38 @@ def send_mail(m, cid):
 def send_error_email(message):
     logger.error("sending an email to the admin with message: %s" % message)
 
-	#COMMASPACE = ', '
-	
+    #COMMASPACE = ', '
+    
     service_email = config.get('error_email', 'service_email')
     service_pass = config.get('error_email', 'service_pass')
     admin_email = config.get('error_email', 'admin_email')
     #admin_email = admin_email.split(",")
-	msg = MIMEMultipart()
+    msg = MIMEMultipart()
 
-	msg['Subject'] = "Error with summarizing blog"
-	msg['From'] = service_email
-	msg['To'] = admin_email
-	msg.preamble = message
-	# attach log file
-	filename = "blog_summary.log"
-	f = file(filename)
-	attachment = MIMEText(f.read())
-	attachment.add_header('Content-Disposition', 'attachment', filename=filename)           
-	msg.attach(attachment)
-		
-	
-	
-	msg.attach
-	
+    msg['Subject'] = "Error with summarizing blog"
+    msg['From'] = service_email
+    msg['To'] = admin_email
+    msg.preamble = message
+    # attach log file
+    filename = "blog_summary.log"
+    f = file(filename)
+    attachment = MIMEText(f.read())
+    attachment.add_header('Content-Disposition', 'attachment', filename=filename)           
+    msg.attach(attachment)
+        
+    
+    
+    msg.attach
+    
     # Prepare actual message
     #headMess = """\From: %s\nTo: %s\nSubject: %s\n\n%s
     #""" % (FROM, ", ".join(TO), SUBJECT, TEXT)
-	
-	
+    
+    
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587) #or port 465 doesn't seem to work!
         #server = smtp.lib.SMTP_SSL("smtp.gmail.com", 465)
-		
+        
         server.ehlo()
         server.starttls()
         server.login(service_email, service_pass)
