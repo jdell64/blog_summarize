@@ -21,3 +21,4 @@ todo:
 - as service and run on startup (done, add to repo)
 - adjust admin email... should have a message in the error message (replaced with text file attachment for now)
 - log rotation
+- switch for test list
