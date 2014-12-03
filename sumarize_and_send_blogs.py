@@ -1,4 +1,6 @@
 import smtplib
+from email.MIMEText import MIMEText
+from email.mime.multipart import MIMEMultipart
 import urllib2
 import datetime
 import mailchimp
@@ -131,27 +133,42 @@ def send_mail(m, cid):
 def send_error_email(message):
     logger.error("sending an email to the admin with message: %s" % message)
 
+	#COMMASPACE = ', '
+	
     service_email = config.get('error_email', 'service_email')
     service_pass = config.get('error_email', 'service_pass')
     admin_email = config.get('error_email', 'admin_email')
-    admin_email = admin_email.split(",")
+    #admin_email = admin_email.split(",")
+	msg = MIMEMultipart()
 
-    FROM = service_email
-    TO = admin_email #must be a list
-    SUBJECT = "Error with summarizing blog"
-    TEXT = message
-
+	msg['Subject'] = "Error with summarizing blog"
+	msg['From'] = service_email
+	msg['To'] = admin_email
+	msg.preamble = message
+	# attach log file
+	filename = "blog_summary.log"
+	f = file(filename)
+	attachment = MIMEText(f.read())
+	attachment.add_header('Content-Disposition', 'attachment', filename=filename)           
+	msg.attach(attachment)
+		
+	
+	
+	msg.attach
+	
     # Prepare actual message
-    headMess = """\From: %s\nTo: %s\nSubject: %s\n\n%s
-    """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
+    #headMess = """\From: %s\nTo: %s\nSubject: %s\n\n%s
+    #""" % (FROM, ", ".join(TO), SUBJECT, TEXT)
+	
+	
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587) #or port 465 doesn't seem to work!
         #server = smtp.lib.SMTP_SSL("smtp.gmail.com", 465)
-
+		
         server.ehlo()
         server.starttls()
         server.login(service_email, service_pass)
-        server.sendmail(FROM, TO, headMess)
+        server.sendmail(service_email, admin_email, msg.as_string())
         #server.quit()
         server.close()
         logger.error('Successfully sent the email to: %s' %admin_email)
