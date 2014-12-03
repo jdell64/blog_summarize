@@ -1,3 +1,4 @@
+import traceback
 import smtplib
 from email.MIMEText import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -55,13 +56,20 @@ def get_blogs(blog_list):
                 if len(titles) < 1:
                     logger.error("Unable to find any titles on blog:" + blog)
                     break
-
-            most_recent_title = titles[0].string
+            if len(titles) < 1:
+                most_recent_title = blog
+            else:
+                most_recent_title = titles[0].string
             contents = soup.findAll("div", {"class": "entry-content"})
             most_recent_content = contents[0].text
             paragraphs = most_recent_content.split("\n")
             paragraphs = filter(None, paragraphs)  # drop empties
-            desired_text = '<p>' + paragraphs[0]
+            desired_text = ""
+            # todo: this is messy!
+            try:
+                desired_text = '<p>' + paragraphs[0]
+            except IndexError:
+                desired_text='<p>'
             index = 1
             while len(desired_text.split(" ")) < 30:  # if the desired text has less than 30 words
                 try:
@@ -71,6 +79,15 @@ def get_blogs(blog_list):
                 except IndexError:
                     logger.warn("Unable to add another paragraph. The blog "+blog+" did not have enough content.")
                     break
+            if desired_text is None:
+                desired_text = "<p>Click the link above to view this blog's content!"
+            if most_recent_title is None:
+                most_recent_title = blog
+            print blog + ":"
+            print blog is None
+            print desired_text is None
+            print most_recent_title is None
+            print "\n"
             blog_summary = '<div class="summary"><h2 class="title"><a href="' + blog + '">' + most_recent_title + \
                            '</a></h2><div class="content">' + desired_text + '</p><p><a href="'+blog+'">Read More...</a></p></div></div>'
             blog_summaries.append(blog_summary)
@@ -200,6 +217,7 @@ def get_last_run_time():
         write_run_time()
 
 def add_seconds_to_dt(sec, dt):
+    print sec, dt
     future = dt + datetime.timedelta(seconds=sec)
     return future
 
@@ -241,11 +259,13 @@ while (1):
 
     try:
         lrt = get_last_run_time() #last run time
+        if lrt is None:
+            lrt = datetime.datetime.now() - datetime.timedelta(days=14)
         nrt = add_seconds_to_dt(SECONDS_TO_SLEEP, lrt) #next run time
         wait_time = check_run_time(nrt) #time until next run time
         time.sleep(wait_time)
     except:
-        logger.error("Unexpected error:" + str(sys.exc_info()))
+        logger.error("Unexpected error:" + str(traceback.print_exc()))
         send_error_email(str(sys.exc_info()))
 
 
@@ -255,7 +275,8 @@ while (1):
         send_mail(m, cid)
         write_run_time()
     except:
-        logger.error("Unexpected error:" + str(sys.exc_info()))
+        #logger.error("Unexpected error:" + str(sys.exc_info()))
+        logger.error("Unexpected error:" + str(traceback.print_exc()))
         send_error_email(str(sys.exc_info()))
     #     SEND AN EMAIL HERE
 
