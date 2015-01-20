@@ -16,7 +16,7 @@ from unidecode import unidecode
 config = ConfigParser.RawConfigParser()
 
 
-# TODO: prod / test / dev mode
+# TODO: prod / test / dev mode -- lastrun would be ignored, dev list would be used.
 
 
 # set up logging
@@ -90,9 +90,9 @@ def get_blogs(blog_list):
             if most_recent_title is None:
                 most_recent_title = blog
             print blog + " variables:"
-            print "\tBlog url is none?\n\t\t" + (blog is None)
-            print "\tBlog desired_text is none?\n\t\t" + desired_text is None
-            print "\tBlog most_recent_title is none?\n\t\t" + most_recent_title is None
+            print "\tBlog url is none?\n\t\t" + str(blog is None)
+            print "\tBlog desired_text is none?\n\t\t" + str(desired_text is None)
+            print "\tBlog most_recent_title is none?\n\t\t" + str(most_recent_title is None)
             print "\n"
             blog_summary = '<div class="summary"><h2 class="title"><a href="' + blog + '">' + most_recent_title + \
                            '</a></h2><div class="content">' + desired_text + '</p><p><a href="'+blog+'">Read More...</a></p></div></div>'
