@@ -61,10 +61,14 @@ def get_blogs(blog_list):
                     logger.error("Unable to find any titles on blog:" + blog)
                     break
 
+            print titles
+            print len(titles)
+
             if len(titles) < 1:
                 most_recent_title = blog
             else:
                 most_recent_title = titles[0].string
+
             contents = soup.findAll("div", {"class": "entry-content"})
             most_recent_content = contents[0].text
             paragraphs = most_recent_content.split("\n")
