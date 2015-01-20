@@ -61,13 +61,10 @@ def get_blogs(blog_list):
                     logger.error("Unable to find any titles on blog:" + blog)
                     break
 
-            print titles
-            print len(titles)
-
             if len(titles) < 1:
                 most_recent_title = blog
             else:
-                most_recent_title = titles[0].string
+                most_recent_title = titles[0].a.string
 
             contents = soup.findAll("div", {"class": "entry-content"})
             most_recent_content = contents[0].text
@@ -88,7 +85,7 @@ def get_blogs(blog_list):
                 except IndexError:
                     logger.warn("Unable to add another paragraph. The blog "+blog+" did not have enough content.")
                     break
-            logger.info("Desired_text on the page:\n\t" + desired_text)
+            #logger.info("Desired_text on the page:\n\t" + desired_text)
             if desired_text is None:
                 desired_text = "<p>Click the link above to view this blog's content!"
             if most_recent_title is None:
