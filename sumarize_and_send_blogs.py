@@ -16,6 +16,9 @@ from unidecode import unidecode
 config = ConfigParser.RawConfigParser()
 
 
+# TODO: prod / test / dev mode
+
+
 # set up logging
 # make log_level in config file, which means i have to set this in the loop
 # logging.basicConfig(filename='blog_summary.log',level=logging.INFO)
@@ -36,6 +39,7 @@ def get_mailchimp_api():
 
 
 # get blogs
+#TODO: CHECK STALENESS OF BLOGS
 def get_blogs(blog_list):
     logger.info("Started summarizing blogs: "+blog_list)
     blog_list = blog_list.split(",")
@@ -56,6 +60,8 @@ def get_blogs(blog_list):
                 if len(titles) < 1:
                     logger.error("Unable to find any titles on blog:" + blog)
                     break
+
+            logger.info("Titles on the page:\n\t" + titles)
             if len(titles) < 1:
                 most_recent_title = blog
             else:
@@ -79,6 +85,7 @@ def get_blogs(blog_list):
                 except IndexError:
                     logger.warn("Unable to add another paragraph. The blog "+blog+" did not have enough content.")
                     break
+            logger.info("Desired_text on the page:\n\t" + desired_text)
             if desired_text is None:
                 desired_text = "<p>Click the link above to view this blog's content!"
             if most_recent_title is None:
@@ -237,6 +244,7 @@ def check_run_time(rt):
 
 #put in the loop
 while (1):
+    logger.info('*******************************************')
     logger.info('Starting process...')
 # read the config file every time you run
 
@@ -281,7 +289,7 @@ while (1):
     #     SEND AN EMAIL HERE
 
     logger.info("Done. Sleeping for %s seconds" % SECONDS_TO_SLEEP)
-
+    logger.info('*******************************************')
     time.sleep(SECONDS_TO_SLEEP)
 
 
