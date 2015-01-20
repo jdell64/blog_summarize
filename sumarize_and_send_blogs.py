@@ -61,7 +61,9 @@ def get_blogs(blog_list):
                     logger.error("Unable to find any titles on blog:" + blog)
                     break
 
-            logger.info("Titles on the page:\n\t" + titles)
+            logger.info("Titles on the page:")
+            for title in titles:
+                logger.info("\t"+title.string)
             if len(titles) < 1:
                 most_recent_title = blog
             else:
