@@ -61,9 +61,6 @@ def get_blogs(blog_list):
                     logger.error("Unable to find any titles on blog:" + blog)
                     break
 
-            logger.info("Titles on the page:")
-            for title in titles:
-                logger.info("\t"+title.string)
             if len(titles) < 1:
                 most_recent_title = blog
             else:
@@ -92,10 +89,10 @@ def get_blogs(blog_list):
                 desired_text = "<p>Click the link above to view this blog's content!"
             if most_recent_title is None:
                 most_recent_title = blog
-            print blog + ":"
-            print blog is None
-            print desired_text is None
-            print most_recent_title is None
+            print blog + " variables:"
+            print "\tBlog url is none?\n\t\t" + (blog is None)
+            print "\tBlog desired_text is none?\n\t\t" + desired_text is None
+            print "\tBlog most_recent_title is none?\n\t\t" + most_recent_title is None
             print "\n"
             blog_summary = '<div class="summary"><h2 class="title"><a href="' + blog + '">' + most_recent_title + \
                            '</a></h2><div class="content">' + desired_text + '</p><p><a href="'+blog+'">Read More...</a></p></div></div>'
@@ -246,7 +243,7 @@ def check_run_time(rt):
 
 #put in the loop
 while (1):
-    logger.info('*******************************************')
+    logger.info('\n*******************************************')
     logger.info('Starting process...')
 # read the config file every time you run
 
@@ -291,7 +288,7 @@ while (1):
     #     SEND AN EMAIL HERE
 
     logger.info("Done. Sleeping for %s seconds" % SECONDS_TO_SLEEP)
-    logger.info('*******************************************')
+    logger.info('*******************************************\n')
     time.sleep(SECONDS_TO_SLEEP)
 
 
