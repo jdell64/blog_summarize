@@ -52,7 +52,7 @@ def get_blogs(blog_list):
                 urllib2.urlopen(blog).close()
             except:
                 logger.error("Error with reading the website:" + blog)
-
+            logger.info("Read blog contents. Trying to parse.")
             soup = BeautifulSoup(html)
             titles = soup.findAll("h2", {"class": "entry-title"})
             if len(titles) < 1:
@@ -60,18 +60,24 @@ def get_blogs(blog_list):
                 if len(titles) < 1:
                     logger.error("Unable to find any titles on blog:" + blog)
                     break
-
+            logger.info("Finished with titles, setting most recent one.")
             if len(titles) < 1:
                 most_recent_title = blog
-            else:
+            elif(titles[0].a):
                 most_recent_title = titles[0].a.string
+            elif(titles[0].string):
+                    most_recent_title = titles[0].string
+            else:
+                most_recent_title = blog
 
+            logger.info("Most recent is: %s." % most_recent_title)
             contents = soup.findAll("div", {"class": "entry-content"})
             most_recent_content = contents[0].text
             paragraphs = most_recent_content.split("\n")
             paragraphs = filter(None, paragraphs)  # drop empties
             desired_text = ""
             # todo: this is messy!
+            logger.info("Trying to get a summary...")
             try:
                 desired_text = '<p>' + paragraphs[0]
             except IndexError:
@@ -85,7 +91,7 @@ def get_blogs(blog_list):
                 except IndexError:
                     logger.warn("Unable to add another paragraph. The blog "+blog+" did not have enough content.")
                     break
-            #logger.info("Desired_text on the page:\n\t" + desired_text)
+            logger.info("Desired_text on the page:" + str(type(desired_text)))
             if desired_text is None:
                 desired_text = "<p>Click the link above to view this blog's content!"
             if most_recent_title is None:
@@ -98,7 +104,7 @@ def get_blogs(blog_list):
             blog_summary = '<div class="summary"><h2 class="title"><a href="' + blog + '">' + most_recent_title + \
                            '</a></h2><div class="content">' + desired_text + '</p><p><a href="'+blog+'">Read More...</a></p></div></div>'
             blog_summaries.append(blog_summary)
-        logger.info("Finished with blog: "+blog)
+            logger.info("Finished with blog: "+blog)
     else:
         logger.error("No blogs in the blog list. Check the config file.")
         return False
